@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html>
+    
+    <head>
+        <meta charset="UTF8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+        
+        <style>
+            *{
+                padding: 0px;
+                margin: 0px;
+                font-family: Arial;
+            }    
+            
+            #screen{
+                position: absolute;
+                overflow: hidden;
+                left: 0px;
+                top: 0px;
+                height: 100%;
+                width: 100%;
+                background-color: rgb(0, 100, 255);
+            }
+            
+            #sun{
+                width: 100px;
+                height: 100px;
+                position: absolute;
+            }
+            
+            #moon{
+                width: 100px;
+                height: 100px;
+                position: absolute;
+            }
+            
+            #floor{
+                width: 100%;
+                bottom: 0px;
+                position: absolute;
+            }
+            
+            .cloud{
+                position: absolute;
+                top: 0px;
+                width: 100%;
+            }
+            
+            #starBackground{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                height: 100%;
+                background-image: url("DATA/starBackground.png");
+                background-size: cover;
+                display: none;
+            }
+            
+            #waterGIF{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+            }
+            
+            #waterUp{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+            }
+            
+            #waterDown{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+            }
+            
+            #nightlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+                display: none;
+            }
+            
+            #yellowlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+                display: none;
+            }
+            
+            #redlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+                display: none;
+            }
+            
+            #summerlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+            }
+            
+            #höstlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+                display: none;
+            }
+            
+            #snowlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+                display: none;
+            }
+            
+            #springlayer{
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 100%;
+                display: none;
+            }
+        </style>
+        
+        <script>
+            
+            
+            $(document).ready(function(){
+                
+                var screenH = window.innerHeight;
+                var screenW = window.innerWidth;
+                
+                var redV = 0;
+                var blueV = 255;
+                var greenV = 100;
+                
+                var angel = 0, dAngel;
+                var waterSpeed = 0.1;
+                
+                var night = false;
+                var days = 0;
+                
+                var rText = 0, bText = 0, gText = 0;
+                var rTextS = 5, bTextS = 7, gTextS = 9;
+                    
+                function setPosition(){
+                    $("#cloud1_2").css({"left" : -screenW + "px"});
+                    $("#cloud2_2").css({"left" : -screenW + "px"});
+                }
+                setPosition()
+                            
+                function updateSky(){
+                    
+                    /*
+                    $("#myname").css({"color" :  "rgb("+rText+", "+gText+", "+bText+")"});
+                    rText += rTextS;
+                    bText += bTextS;
+                    gText += gTextS;
+                    if(rText > 255 || rText < 0) rTextS *= -1;
+                    if(bText > 255 || bText < 0) bTextS *= -1;
+                    if(gText > 255 || gText < 0) gTextS *= -1;
+                    */
+                                        
+                    //Moving objekts
+                    $("#sun").css({"left": screenW / 2 - 50 + Math.cos(angel - 3.14)*screenW*0.5 + "px", "top" : screenH + Math.sin(angel - 3.14)*screenH + "px"});
+                    $("#moon").css({"left": screenW / 2 - 50 + Math.cos(angel)*screenW*0.5 + "px", "top" : screenH + Math.sin(angel)*screenH + "px"});
+                    angel += 0.002;
+                    
+                    //Sky color
+                    dAngel = angel*180/3.14;
+                    if(dAngel > 360) angel = 0;
+                    
+                    //Day ---> Yellow
+                    if(dAngel > 100 && dAngel < 150){
+                        blueV = 235 * ((150-dAngel) / ( 150-100)) + 20;
+                        greenV = 100 * ((dAngel-100) / 50) + 100;
+                        redV = 200 * ((dAngel-100) / 50);
+                    }
+                    
+                    //Day ---> Red
+                    if(dAngel > 150 && dAngel < 170){
+                        greenV = 140 * ((170-dAngel) / 20) + 60;
+                    }
+                    
+                    //Day ---> Night
+                    if(dAngel > 170 && dAngel < 210){
+                        redV = 200 * ((210-dAngel) / (210-170));
+                        greenV = 60 * ((210-dAngel) / (210-170));
+                        //greenV = 100 * ((210-dAngel) / (210-170));
+                        if(!night){
+                            $("#starBackground").fadeIn(3000);
+                            $("#redlayer").fadeOut(2000);
+                            $("#nightlayer").fadeIn(3000);
+                            night = true;
+                        }
+                    }
+                    
+                    //Night --->Day
+                    if(dAngel > 340){
+                        blueV = 255 * ((dAngel - 340) / 20);
+                        greenV = 100 * ((dAngel- 340) / 20);
+                        if(night){
+                            days += 1;
+                            $("#starBackground").fadeOut(3000);
+                            $("#nightlayer").fadeOut(3000);
+                            if(days == 1){
+                                $("#summerlayer").fadeOut(4000);
+                                $("#höstlayer").fadeIn(4000);
+                            }
+                            if(days == 2){
+                                $("#höstlayer").fadeOut(4000);
+                                $("#snowlayer").fadeIn(4000);
+                            }
+                            if(days == 3){
+                                $("#snowlayer").fadeOut(4000);
+                                $("#springlayer").fadeIn(4000);
+                            }
+                            if(days == 4){
+                                $("#summerlayer").fadeIn(4000);
+                                $("#springlayer").fadeOut(4000);
+                                days = 0;
+                            }
+                            night = false;
+                        }
+                    }
+                    
+
+                    
+                    //Background color animation
+                    $("#screen").css({"background-color" : "rgb("+Math.floor(redV)+", "+Math.floor(greenV)+", "+Math.floor(blueV)+")"});
+                    
+                    if(dAngel > 130 && dAngel < 131){
+                        $("#yellowlayer").fadeIn(2000, function(){
+                            $(this).fadeOut(1000);
+                            $("#redlayer").fadeIn(2000);
+                        })
+                    }
+                    
+                    //Moving cloud
+                    $("#cloud1_1").css({"left" : "+=0.5"});
+                    $("#cloud1_2").css({"left" : "+=0.5"});
+                    $("#cloud2_1").css({"left" : "+=0.2"});
+                    $("#cloud2_2").css({"left" : "+=0.2"});
+                    for(var x = 0; x < 4; x++){
+                        if($(".cloud").eq(x).css("left").replace("px", "") > screenW - 0.5) $(".cloud").eq(x).css("left", -screenW + "px");
+                    }
+                    
+                    $("#waterUp").css({"bottom" : "-=" + waterSpeed});
+                    $("#waterDown").css({"bottom" : "-=" + -1*waterSpeed});
+                    
+                    if($("#waterDown").css("bottom").replace("px", "") > screenH / 150) waterSpeed *= -1;
+                    if($("#waterDown").css("bottom").replace("px", "") < 0) waterSpeed *= -1;
+                }
+                
+                var animations = setInterval(function(){
+
+                    updateSky();
+                    
+                }, 14);
+            })
+        </script>
+    </head>
+    
+    <body>
+        <div id="screen">
+            
+            <div id="starBackground"></div>
+            
+            <img id="sun" src="DATA/sun.png">
+            <img id="moon" src="DATA/moon.png">
+            <img class="cloud" id="cloud1_1" src="DATA/cloud1.png">
+            <img class="cloud" id="cloud1_2" src="DATA/cloud1.png">
+            <img class="cloud" id="cloud2_1" src="DATA/cloud2.png">
+            <img class="cloud" id="cloud2_2" src="DATA/cloud2.png">
+            
+            <img id="floor" src="DATA/floor.png">
+            <img id="summerlayer" src="DATA/SummerLayer.png">
+            <img id="höstlayer" src="DATA/höstLayer.png">
+            <img id="snowlayer" src="DATA/SnowLayer.png">
+            <img id="springlayer" src="DATA/springLayer.png">
+                        
+            <img id="waterUp" src="DATA/waterUp.png">
+            <img id="waterDown" src="DATA/waterDown.png">
+            <img id="waterGIF" src="DATA/waterGIF.gif">
+            
+            <img id="yellowlayer" src="DATA/yellowlayer.png">
+            <img id="redlayer" src="DATA/redlayer.png">
+            <img id="nightlayer" src="DATA/nightlayer.png">
+            
+            <!--<div style="position: fixed; top: 0px; left: 0px; color: white; padding: 10px; background-color: black; border-radius: 0px 0px 15px 0px; border: 5px solid grey; border-top: 0px; border-left: 0px"><h1 id="myname">HTMLBlock <span style="font-size: 20px; vertical-align: middle;"> Av: Adam Jonsson</span></h1></div>-->
+            
+        </div>
+    </body>
+    
+</html>
